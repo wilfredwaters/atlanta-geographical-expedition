@@ -1,5 +1,7 @@
 # Atlanta Geographical Expedition
 
+This app is associated with a [Meetup of the same name, you are encouraged to join.](https://www.meetup.com/atlanta-geographical-expedition/)
+
 The goal of this app is to:
 
 1. Use AI for good.
