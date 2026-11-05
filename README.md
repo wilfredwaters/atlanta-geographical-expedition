@@ -1,4 +1,4 @@
-# DeKalb County SVI Equity Map
+# Atlanta Geographical Expedition
 
 Interactive map: https://wilfredwaters.github.io/dekalb-svi-map/
 
