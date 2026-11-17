@@ -40,14 +40,15 @@ Hand-written code sits in the last `<script>` blocks:
   `[value, moe]` for MINRTY, POV150, UNINSUR, HBURD.
 - GeoJSON properties hold `RPL_THEMES`, `share_<MEASURE>` (fractions),
   `struct1..3`, `top1..5`, `half` (north/south), `pop`.
-- `popupHtml`, `explainText`, `grokUrl` build popups; hover popups bind to
+- `popupHtml`, `explainText`, `aiUrl` build popups (`AI` lists the
+  ChatGPT, Claude and Grok links); hover popups bind to
   every overlay in the layer control.
 - The About panel is static HTML in `<div id="about">`.
 - Fulton and Wayne features are added to every overlay except
   `noHsGroup` in the block just above `NOHS_PRI`; `DATA` is extended with
   `EXTRA_DATA`. `CTY` maps the 5-digit county FIPS to name, state and
   mean structural share (DeKalb 70.5, Fulton 71.1, Wayne 66.5) for
-  popups, explanations and the Grok question. `COUNTY_VIEW` drives the
+  popups, explanations and the AI question. `COUNTY_VIEW` drives the
   county buttons (top right).
 
 ## No-diploma layer (`noHsGroup`)

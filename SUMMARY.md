@@ -66,7 +66,7 @@ Every tract's popup has an **Explain this tract** button. Tap it to get a plain-
 - **#1 structural driver:** the biggest structural measure in each tract.
 - **Minority share:** the percent of residents who are a racial or ethnic minority.
 - **Tap any tract** to see its score, top drivers and rates with margins of error.
-- **Ask Grok about this tract:** a link in each popup opens Grok in a new tab with a question that includes that tract's numbers. The question is filled in for you, and those numbers go to Grok only if you press send.
+- **Fix structural drivers with: ChatGPT, Claude, Grok:** the last line of each popup links to all three. Each opens in a new tab with the same question, which includes that tract's numbers. Claude and Grok fill in the question and wait for you to press send; ChatGPT can send it as soon as it opens.
 - **Switch the background map** with the layer button in the top right (street map, gray map or topographic map).
 
 ## Limits
