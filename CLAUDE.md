@@ -2,8 +2,8 @@
 
 Leaflet map of social vulnerability using CDC/ATSDR SVI 2022: DeKalb
 County, GA (201 tracts with scores, 203 total), Fulton County, GA
-(325/327) and Wayne County, MI — Detroit, site of Bunge's 1968
-expedition (582/625). Served by GitHub Pages from `main`: https://wilfredwaters.github.io/atlanta-geographical-expedition/
+(325/327), and Metro Detroit's Wayne (582/625; Detroit, site of
+Bunge's 1968 expedition), Oakland (343/350) and Macomb (236/243), MI. Served by GitHub Pages from `main`: https://wilfredwaters.github.io/atlanta-geographical-expedition/
 
 ## Files
 
@@ -11,7 +11,7 @@ expedition (582/625). Served by GitHub Pages from `main`: https://wilfredwaters.
   grep, or read by line range.
 - `SUMMARY.md` — method and findings, in plain language.
 - `README.md` — project and Meetup context.
-- `counties.js` — generated Fulton and Wayne data (`EXTRA_GEO`,
+- `counties.js` — generated non-DeKalb data (`EXTRA_GEO`,
   `EXTRA_DATA`). Don't edit; rerun `tools/build_counties.py` (usage in
   its docstring). `--check` compares its output with DeKalb's `DATA`:
   199/201 match; 2 differ only in the order of exactly tied measures.
@@ -44,12 +44,14 @@ Hand-written code sits in the last `<script>` blocks:
   ChatGPT, Claude and Grok links); hover popups bind to
   every overlay in the layer control.
 - The About panel is static HTML in `<div id="about">`.
-- Fulton and Wayne features are added to every overlay except
+- Non-DeKalb features are added to every overlay except
   `noHsGroup` in the block just above `NOHS_PRI`; `DATA` is extended with
   `EXTRA_DATA`. `CTY` maps the 5-digit county FIPS to name, state and
-  mean structural share (DeKalb 70.5, Fulton 71.1, Wayne 66.5) for
+  mean structural share (DeKalb 70.5, Fulton 71.1, Wayne 66.5, Oakland
+  62.6, Macomb 64.6) for
   popups, explanations and the AI question. `COUNTY_VIEW` drives the
-  county buttons (top right).
+  county buttons (top right). The legend (`#lg`) sits bottom right so
+  the About panel doesn't cover it.
 
 ## No-diploma layer (`noHsGroup`)
 

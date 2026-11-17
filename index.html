@@ -82,16 +82,16 @@
 #about table{border-collapse:collapse;font-size:12px}#about td,#about th{border:1px solid #ccc;padding:3px}#about h1{font-size:18px}#about h2{font-size:16px;margin-top:16px}
 .btn{font:13px sans-serif;padding:6px 10px;border:1px solid #666;border-radius:6px;background:#fff;cursor:pointer}
 #reopen{position:fixed;bottom:22px;left:90px;z-index:9999;display:none}
-#lg{position:fixed;bottom:22px;left:8px;z-index:9998;background:rgba(255,255,255,.93);padding:6px 8px;font:11px sans-serif;border:1px solid #999;border-radius:6px;max-height:40vh;overflow-y:auto;max-width:200px}
+#lg{position:fixed;bottom:22px;right:8px;z-index:9998;background:rgba(255,255,255,.93);padding:6px 8px;font:11px sans-serif;border:1px solid #999;border-radius:6px;max-height:40vh;overflow-y:auto;max-width:200px}
 #lg i{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:middle;border:1px solid #888}
 </style>
 <div id="about"><div class="hd"><span>About this map</span><button class="btn" onclick="document.getElementById('about').style.display='none';document.getElementById('reopen').style.display='block'">Close</button></div><div class="bd"><h1>About this map</h1>
 <h2>The goal</h2>
 <p>This map supports equity in DeKalb County, Georgia. The aim is to find the structural causes of vulnerability so they can be removed. "Structural" means conditions built into how housing, jobs, health care and money work, not traits of the people who live there. The no-diploma layer narrows this to one structural driver, lack of a high school diploma. Across four of the five Dunwoody cluster elementary schools there are 673 unused seats (capacity minus enrollment, from an undated DeKalb planning table). This app is meant to help understand opportunities to fill them in a way that targets vulnerability reduction in other census tracts.</p>
-<p>The map also covers Fulton County, Georgia, so both sides of Atlanta are shown, and Wayne County, Michigan, home of Detroit, where William Bunge ran the first Detroit Geographical Expedition in 1968. Use the county buttons at top right to move between them. The no-diploma layer is DeKalb only. The findings below are for DeKalb.</p>
+<p>The map also covers Fulton County, Georgia, so both sides of Atlanta are shown, and Metro Detroit's three counties, Wayne, Oakland and Macomb, Michigan. Detroit itself is in Wayne County, where William Bunge ran the first Detroit Geographical Expedition in 1968. Use the county buttons at top right to move between them. The legend for each layer is at bottom right. The no-diploma layer is DeKalb only. The findings below are for DeKalb.</p>
 <h2>What the CDC Social Vulnerability Index is</h2>
 <p>The CDC Social Vulnerability Index (SVI) shows which places may need the most help in a disaster or crisis. It uses 16 measures, such as poverty, people without health insurance, and households with no car.</p>
-<p>The map works with census tracts. A census tract is a small neighborhood area set by the Census Bureau, usually with 2,500 to 8,000 people. DeKalb has 203 tracts. 201 of them have SVI data, and this map uses all 201. Fulton has 327 tracts (325 with data) and Wayne has 625 (582 with data). Tracts without data are shown in gray.</p>
+<p>The map works with census tracts. A census tract is a small neighborhood area set by the Census Bureau, usually with 2,500 to 8,000 people. DeKalb has 203 tracts. 201 of them have SVI data, and this map uses all 201. Fulton has 327 tracts (325 with data) Wayne has 625 (582 with data), Oakland 350 (343) and Macomb 243 (236). Tracts without data are shown in gray.</p>
 <p>Each measure is turned into a percentile. A percentile tells you how a tract compares to every other tract in the United States. A percentile of 0.80 means the tract ranks higher than 80% of US tracts on that measure. The 16 percentiles are added up and ranked again. That gives one overall score from 0 to 1. Higher means more vulnerable.</p>
 <h2>Your questions and what we found</h2>
 <p><strong>Which tracts are included?</strong> You first tried leaving out the least vulnerable tracts, those in the lowest quarter nationally (a score below 0.25). Then you chose to use all tracts. So every result below covers all 201 tracts.</p>
@@ -157,7 +157,8 @@
 <li><strong>#1 structural driver:</strong> the biggest structural measure in each tract.</li>
 <li><strong>Minority share:</strong> the percent of residents who are a racial or ethnic minority.</li>
 <li><strong>No-diploma layer:</strong> magenta outlines mark the priority tracts described above, and blue outlines mark the Dunwoody cluster tracts. Both are outlines only, with no fill.</li>
-<li><strong>County buttons</strong> (top right): jump to DeKalb, Fulton or Wayne (Detroit).</li>
+<li><strong>Legend</strong> (bottom right): colors for each layer. Hide it, or bring it back with the Legend button.</li>
+<li><strong>County buttons</strong> (top right): jump to DeKalb, Fulton or the three Detroit counties.</li>
 <li><strong>Tap any tract</strong> to see its score, top drivers and rates with margins of error.</li>
 <li><strong>Switch the background map</strong> with the layer button in the top right (street map, gray map or topographic map).</li>
 </ul>
@@ -438,8 +439,9 @@ var minority_data={"type": "FeatureCollection", "features": [{"id": "0", "type":
 function mcol(v,x){if(x)return '#bbbbbb'; if(v===null)return '#eeeeee'; return v>=97?'#3f007d':v>=90?'#6a51a3':v>=75?'#9e9ac8':v>=50?'#cbc9e2':'#f2f0f7';}
 var minority_layer=L.geoJson(minority_data,{style:function(f){return {fillColor:mcol(f.properties.m,f.properties.x),fillOpacity:0.75,color:'white',weight:0.5};},onEachFeature:function(f,l){l.bindPopup(f.properties.p,{maxWidth:320});}});
 
-// Fulton (Atlanta west of DeKalb) and Wayne, MI (Detroit, home of Bunge's
-// 1968 Detroit Geographical Expedition) join every overlay except the
+// Fulton (Atlanta west of DeKalb) and Wayne, Oakland and Macomb, MI
+// (Metro Detroit; Bunge's 1968 Detroit Geographical Expedition was in
+// Wayne) join every overlay except the
 // no-diploma one, which is DeKalb only. Shapes and values: counties.js.
 var DRV_COL={POV150:'#e41a1c',UNEMP:'#377eb8',HBURD:'#4daf4a',NOHSDP:'#984ea3',UNINSUR:'#ff7f00',LIMENG:'#a65628',MUNIT:'#f781bf',MOBILE:'#999999',CROWD:'#66c2a5',NOVEH:'#000000',MINRTY:'#ffd92f'};
 function extraStyle(fill){ return function(f){ return {fillColor:fill(f.properties),fillOpacity:0.75,color:'white',weight:0.5}; }; }
@@ -448,8 +450,8 @@ L.geoJson(EXTRA_GEO,{style:function(f){ return {fillColor:DRV_COL[f.properties.d
 L.geoJson(EXTRA_GEO,{style:{color:'#555',fillOpacity:0,weight:0.3}}).eachLayer(function(l){ geo_json_61cc50ef9183145099fdb1e3ebcef135.addLayer(l); });
 L.geoJson(EXTRA_GEO,{style:extraStyle(function(p){ return mcol(p.m,false); })}).eachLayer(function(l){ minority_layer.addLayer(l); });
 
-// Jump between counties: Wayne is 600 miles from Atlanta.
-var COUNTY_VIEW={'DeKalb':[33.77,-84.23,11],'Fulton':[33.84,-84.47,10],'Wayne (Detroit)':[42.28,-83.26,10]};
+// Jump between areas: Detroit is 600 miles from Atlanta.
+var COUNTY_VIEW={'DeKalb':[33.77,-84.23,11],'Fulton':[33.84,-84.47,10],'Detroit (3 counties)':[42.47,-83.2,9]};
 var jump=L.control({position:'topright'});
 jump.onAdd=function(){ var div=L.DomUtil.create('div','leaflet-bar'); div.style.cssText='background:#fff;padding:4px;font:12px sans-serif';
   Object.keys(COUNTY_VIEW).forEach(function(k){ var b=L.DomUtil.create('button','btn',div); b.textContent=k; b.style.cssText='display:block;width:100%;margin:2px 0;padding:3px 6px';
@@ -508,7 +510,7 @@ var LAB={POV150:'Below 150% poverty',UNEMP:'Unemployment',HBURD:'Housing cost bu
 var MEAN={POV150:'people with income below 1.5 times the poverty line',UNEMP:'people who want a job but cannot find one',HBURD:'households that spend 30% or more of their income on housing',NOHSDP:'adults without a high school diploma',UNINSUR:'people with no health insurance',AGE65:'people aged 65 or older',AGE17:'children aged 17 or younger',DISABL:'people with a disability',SNGPNT:'households with one parent raising children',LIMENG:'people who speak English less than well',MINRTY:'people who are a racial or ethnic minority',MUNIT:'homes in buildings with 10 or more units',MOBILE:'homes that are mobile homes',CROWD:'homes with more people than rooms',NOVEH:'households with no vehicle',GROUPQ:'people living in group quarters, such as dorms, nursing homes or jails'};
 Object.assign(DATA,EXTRA_DATA);
 // County by first 5 FIPS digits: name, state, mean structural share (%).
-var CTY={'13089':['DeKalb County','Georgia',70.5],'13121':['Fulton County','Georgia',71.1],'26163':['Wayne County','Michigan',66.5]};
+var CTY={'13089':['DeKalb County','Georgia',70.5],'13121':['Fulton County','Georgia',71.1],'26163':['Wayne County','Michigan',66.5],'26125':['Oakland County','Michigan',62.6],'26099':['Macomb County','Michigan',64.6]};
 function cty(id){ return CTY[id.slice(0,5)]; }
 function grp(v){return v<0.25?'Low (0.00-0.25)':v<0.5?'Low-moderate (0.25-0.50)':v<0.75?'Moderate-high (0.50-0.75)':'High (0.75-1.00)';}
 function f1(x){return (Math.round(x*10)/10).toFixed(1);}
@@ -584,7 +586,7 @@ map.on('popupclose',function(){ overPopup=false; highlight(null); });
 
 var lg=document.getElementById('lg');
 if(lg){ var t=document.createElement('button'); t.className='btn'; t.id='lgbtn'; t.textContent='Legend';
-  t.style.cssText='position:fixed;bottom:22px;left:8px;z-index:9999';
+  t.style.cssText='position:fixed;bottom:22px;right:8px;z-index:9999';
   document.body.appendChild(t);
   function hide(){lg.style.display='none';t.style.display='block';}
   function show(){lg.style.display='block';t.style.display='none';}
