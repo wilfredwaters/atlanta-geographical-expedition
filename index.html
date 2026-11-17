@@ -83,15 +83,17 @@
 .btn{font:13px sans-serif;padding:6px 10px;border:1px solid #666;border-radius:6px;background:#fff;cursor:pointer}
 #reopen{position:fixed;bottom:22px;left:90px;z-index:9999;display:none}
 #lg{position:fixed;bottom:22px;right:8px;z-index:9998;background:rgba(255,255,255,.93);padding:6px 8px;font:11px sans-serif;border:1px solid #999;border-radius:6px;max-height:40vh;overflow-y:auto;max-width:200px}
+/* County names: black with a white halo, centered on the label point. */
+.cty-lbl span{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;color:#000;font:bold 15px -apple-system,Segoe UI,Arial,sans-serif;text-shadow:-2px 0 #fff,2px 0 #fff,0 -2px #fff,0 2px #fff,-1px -1px #fff,1px 1px #fff,-1px 1px #fff,1px -1px #fff}
 #lg i{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:middle;border:1px solid #888}
 </style>
 <div id="about"><div class="hd"><span>About this map</span><button class="btn" onclick="document.getElementById('about').style.display='none';document.getElementById('reopen').style.display='block'">Close</button></div><div class="bd"><h1>About this map</h1>
 <h2>The goal</h2>
 <p>This map supports equity in DeKalb County, Georgia. The aim is to find the structural causes of vulnerability so they can be removed. "Structural" means conditions built into how housing, jobs, health care and money work, not traits of the people who live there. The no-diploma layer narrows this to one structural driver, lack of a high school diploma. Across four of the five Dunwoody cluster elementary schools there are 673 unused seats (capacity minus enrollment, from an undated DeKalb planning table). This app is meant to help understand opportunities to fill them in a way that targets vulnerability reduction in other census tracts.</p>
-<p>The map also covers Fulton County, Georgia, so both sides of Atlanta are shown, and Metro Detroit's three counties, Wayne, Oakland and Macomb, Michigan. Detroit itself is in Wayne County, where William Bunge ran the first Detroit Geographical Expedition in 1968. Use the county buttons at top right to move between them. The legend for each layer is at bottom right. The no-diploma layer is DeKalb only. The findings below are for DeKalb.</p>
+<p>The map also covers Fulton and Clayton counties, Georgia, so all sides of Atlanta are shown, and Metro Detroit's three counties, Wayne, Oakland and Macomb, Michigan. Detroit itself is in Wayne County, where William Bunge ran the first Detroit Geographical Expedition in 1968. Use the county buttons at top right, grouped by city, to move between them. Heavy black lines mark county boundaries. The legend for each layer is at bottom right. The no-diploma layer is DeKalb only. The findings below are for DeKalb.</p>
 <h2>What the CDC Social Vulnerability Index is</h2>
 <p>The CDC Social Vulnerability Index (SVI) shows which places may need the most help in a disaster or crisis. It uses 16 measures, such as poverty, people without health insurance, and households with no car.</p>
-<p>The map works with census tracts. A census tract is a small neighborhood area set by the Census Bureau, usually with 2,500 to 8,000 people. DeKalb has 203 tracts. 201 of them have SVI data, and this map uses all 201. Fulton has 327 tracts (325 with data) Wayne has 625 (582 with data), Oakland 350 (343) and Macomb 243 (236). Tracts without data are shown in gray.</p>
+<p>The map works with census tracts. A census tract is a small neighborhood area set by the Census Bureau, usually with 2,500 to 8,000 people. DeKalb has 203 tracts. 201 of them have SVI data, and this map uses all 201. Fulton has 327 tracts (325 with data), Clayton 70 (69) Wayne has 625 (582 with data), Oakland 350 (343) and Macomb 243 (236). Tracts without data are shown in gray.</p>
 <p>Each measure is turned into a percentile. A percentile tells you how a tract compares to every other tract in the United States. A percentile of 0.80 means the tract ranks higher than 80% of US tracts on that measure. The 16 percentiles are added up and ranked again. That gives one overall score from 0 to 1. Higher means more vulnerable.</p>
 <h2>Your questions and what we found</h2>
 <p><strong>Which tracts are included?</strong> You first tried leaving out the least vulnerable tracts, those in the lowest quarter nationally (a score below 0.25). Then you chose to use all tracts. So every result below covers all 201 tracts.</p>
@@ -158,7 +160,7 @@
 <li><strong>Minority share:</strong> the percent of residents who are a racial or ethnic minority.</li>
 <li><strong>No-diploma layer:</strong> magenta outlines mark the priority tracts described above, and blue outlines mark the Dunwoody cluster tracts. Both are outlines only, with no fill.</li>
 <li><strong>Legend</strong> (bottom right): colors for each layer. Hide it, or bring it back with the Legend button.</li>
-<li><strong>County buttons</strong> (top right): jump to DeKalb, Fulton or the three Detroit counties.</li>
+<li><strong>County buttons</strong> (top right): one per county, grouped by city: Atlanta (DeKalb, Fulton, Clayton) and Detroit (Wayne, Oakland, Macomb).</li>
 <li><strong>Tap any tract</strong> to see its score, top drivers and rates with margins of error.</li>
 <li><strong>Switch the background map</strong> with the layer button in the top right (street map, gray map or topographic map).</li>
 </ul>
@@ -439,7 +441,7 @@ var minority_data={"type": "FeatureCollection", "features": [{"id": "0", "type":
 function mcol(v,x){if(x)return '#bbbbbb'; if(v===null)return '#eeeeee'; return v>=97?'#3f007d':v>=90?'#6a51a3':v>=75?'#9e9ac8':v>=50?'#cbc9e2':'#f2f0f7';}
 var minority_layer=L.geoJson(minority_data,{style:function(f){return {fillColor:mcol(f.properties.m,f.properties.x),fillOpacity:0.75,color:'white',weight:0.5};},onEachFeature:function(f,l){l.bindPopup(f.properties.p,{maxWidth:320});}});
 
-// Fulton (Atlanta west of DeKalb) and Wayne, Oakland and Macomb, MI
+// Fulton and Clayton (Atlanta), and Wayne, Oakland and Macomb, MI
 // (Metro Detroit; Bunge's 1968 Detroit Geographical Expedition was in
 // Wayne) join every overlay except the
 // no-diploma one, which is DeKalb only. Shapes and values: counties.js.
@@ -450,14 +452,33 @@ L.geoJson(EXTRA_GEO,{style:function(f){ return {fillColor:DRV_COL[f.properties.d
 L.geoJson(EXTRA_GEO,{style:{color:'#555',fillOpacity:0,weight:0.3}}).eachLayer(function(l){ geo_json_61cc50ef9183145099fdb1e3ebcef135.addLayer(l); });
 L.geoJson(EXTRA_GEO,{style:extraStyle(function(p){ return mcol(p.m,false); })}).eachLayer(function(l){ minority_layer.addLayer(l); });
 
-// Jump between areas: Detroit is 600 miles from Atlanta.
-var COUNTY_VIEW={'DeKalb':[33.77,-84.23,11],'Fulton':[33.84,-84.47,10],'Detroit (3 counties)':[42.47,-83.2,9]};
+// County outlines (heavy black) and names (black, white halo), above the
+// tract layers. Their panes ignore the mouse so tract popups still work.
+var cmap=map_81f614882c315cc8a20dc059629ce4e3;
+cmap.createPane('ctyLines').style.zIndex=450;
+cmap.createPane('ctyLabels').style.zIndex=460;
+cmap.getPane('ctyLines').style.pointerEvents='none';
+cmap.getPane('ctyLabels').style.pointerEvents='none';
+var ctyBounds={};
+var countyLayer=L.featureGroup([L.geoJson(COUNTY_LINES,{pane:'ctyLines',interactive:false,style:{color:'#000',weight:3.5,opacity:1,fill:false},
+  onEachFeature:function(f,l){ ctyBounds[f.properties.NAME]=l.getBounds(); }})]);
+COUNTY_LINES.features.forEach(function(f){
+  var icon=L.divIcon({className:'cty-lbl',html:'<span>'+f.properties.NAME+'</span>',iconSize:null});
+  countyLayer.addLayer(L.marker(f.properties.lab,{icon:icon,pane:'ctyLabels',interactive:false,keyboard:false}));
+});
+countyLayer.addTo(cmap);
+
+// County buttons, grouped by city. Detroit is 600 miles from Atlanta.
+var CITY=[['Atlanta',['DeKalb','Fulton','Clayton']],['Detroit',['Wayne','Oakland','Macomb']]];
 var jump=L.control({position:'topright'});
-jump.onAdd=function(){ var div=L.DomUtil.create('div','leaflet-bar'); div.style.cssText='background:#fff;padding:4px;font:12px sans-serif';
-  Object.keys(COUNTY_VIEW).forEach(function(k){ var b=L.DomUtil.create('button','btn',div); b.textContent=k; b.style.cssText='display:block;width:100%;margin:2px 0;padding:3px 6px';
-    b.onclick=function(){ var v=COUNTY_VIEW[k]; map_81f614882c315cc8a20dc059629ce4e3.setView([v[0],v[1]],v[2]); }; });
+jump.onAdd=function(){ var div=L.DomUtil.create('div','leaflet-bar'); div.style.cssText='background:#fff;padding:4px 6px;font:12px sans-serif';
+  CITY.forEach(function(c){
+    var h=L.DomUtil.create('div','',div); h.textContent=c[0]; h.style.cssText='font-weight:bold;margin:4px 0 2px';
+    c[1].forEach(function(k){ var b=L.DomUtil.create('button','btn',div); b.textContent=k; b.style.cssText='display:block;width:100%;margin:2px 0;padding:3px 6px';
+      b.onclick=function(){ cmap.fitBounds(ctyBounds[k]); }; });
+  });
   L.DomEvent.disableClickPropagation(div); return div; };
-jump.addTo(map_81f614882c315cc8a20dc059629ce4e3);
+jump.addTo(cmap);
 
 var NOHS_PRI = ["13089021420", "13089023431", "13089022012", "13089021410", "13089023427", "13089021204", "13089021308", "13089022011", "13089021310", "13089021812", "13089022016"], NOHS_CLU = ["13089021210", "13089021224", "13089021229"];
 var noHsSrc = geo_json_bf9a23d19065cc6d2d806ecafd7be546;
@@ -488,6 +509,7 @@ var layer_control_097befece45624d0ea761f79e99176c6_layers = {
                     "Overall SVI" : choropleth_16a573e410c3036aa9f5ae79511ce959,
                     "#1 structural driver" : geo_json_cbd8c3b3a785c6e242ed10f7b457e624,
                     "Click for details" : geo_json_61cc50ef9183145099fdb1e3ebcef135,
+                    "County boundaries" : countyLayer,
                 },
             };
             let layer_control_097befece45624d0ea761f79e99176c6 = L.control.layers(
@@ -510,7 +532,7 @@ var LAB={POV150:'Below 150% poverty',UNEMP:'Unemployment',HBURD:'Housing cost bu
 var MEAN={POV150:'people with income below 1.5 times the poverty line',UNEMP:'people who want a job but cannot find one',HBURD:'households that spend 30% or more of their income on housing',NOHSDP:'adults without a high school diploma',UNINSUR:'people with no health insurance',AGE65:'people aged 65 or older',AGE17:'children aged 17 or younger',DISABL:'people with a disability',SNGPNT:'households with one parent raising children',LIMENG:'people who speak English less than well',MINRTY:'people who are a racial or ethnic minority',MUNIT:'homes in buildings with 10 or more units',MOBILE:'homes that are mobile homes',CROWD:'homes with more people than rooms',NOVEH:'households with no vehicle',GROUPQ:'people living in group quarters, such as dorms, nursing homes or jails'};
 Object.assign(DATA,EXTRA_DATA);
 // County by first 5 FIPS digits: name, state, mean structural share (%).
-var CTY={'13089':['DeKalb County','Georgia',70.5],'13121':['Fulton County','Georgia',71.1],'26163':['Wayne County','Michigan',66.5],'26125':['Oakland County','Michigan',62.6],'26099':['Macomb County','Michigan',64.6]};
+var CTY={'13089':['DeKalb County','Georgia',70.5],'13121':['Fulton County','Georgia',71.1],'26163':['Wayne County','Michigan',66.5],'26125':['Oakland County','Michigan',62.6],'26099':['Macomb County','Michigan',64.6],'13063':['Clayton County','Georgia',74.7]};
 function cty(id){ return CTY[id.slice(0,5)]; }
 function grp(v){return v<0.25?'Low (0.00-0.25)':v<0.5?'Low-moderate (0.25-0.50)':v<0.75?'Moderate-high (0.50-0.75)':'High (0.75-1.00)';}
 function f1(x){return (Math.round(x*10)/10).toFixed(1);}

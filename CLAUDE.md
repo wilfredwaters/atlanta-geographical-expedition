@@ -1,8 +1,8 @@
 # Atlanta Geographical Expedition
 
 Leaflet map of social vulnerability using CDC/ATSDR SVI 2022: DeKalb
-County, GA (201 tracts with scores, 203 total), Fulton County, GA
-(325/327), and Metro Detroit's Wayne (582/625; Detroit, site of
+County, GA (201 tracts with scores, 203 total), Fulton (325/327) and
+Clayton (69/70), GA, and Metro Detroit's Wayne (582/625; Detroit, site of
 Bunge's 1968 expedition), Oakland (343/350) and Macomb (236/243), MI. Served by GitHub Pages from `main`: https://wilfredwaters.github.io/atlanta-geographical-expedition/
 
 ## Files
@@ -48,9 +48,12 @@ Hand-written code sits in the last `<script>` blocks:
   `noHsGroup` in the block just above `NOHS_PRI`; `DATA` is extended with
   `EXTRA_DATA`. `CTY` maps the 5-digit county FIPS to name, state and
   mean structural share (DeKalb 70.5, Fulton 71.1, Wayne 66.5, Oakland
-  62.6, Macomb 64.6) for
-  popups, explanations and the AI question. `COUNTY_VIEW` drives the
-  county buttons (top right). The legend (`#lg`) sits bottom right so
+  62.6, Macomb 64.6, Clayton 74.7) for
+  popups, explanations and the AI question. `CITY` groups the county
+  buttons (top right) by city; each fits that county's bounds.
+- `countyLayer` ("County boundaries" overlay, on by default):
+  `COUNTY_LINES` outlines (black, weight 3.5) and names (`.cty-lbl`,
+  white halo) in panes `ctyLines`/`ctyLabels`, which ignore the mouse. The legend (`#lg`) sits bottom right so
   the About panel doesn't cover it.
 
 ## No-diploma layer (`noHsGroup`)
