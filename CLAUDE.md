@@ -1,8 +1,9 @@
 # Atlanta Geographical Expedition
 
-Leaflet map of social vulnerability in DeKalb County, GA, using CDC/ATSDR
-SVI 2022 (201 tracts with scores, 203 total). Served by GitHub Pages from
-`main`: https://wilfredwaters.github.io/atlanta-geographical-expedition/
+Leaflet map of social vulnerability using CDC/ATSDR SVI 2022: DeKalb
+County, GA (201 tracts with scores, 203 total), Fulton County, GA
+(325/327) and Wayne County, MI — Detroit, site of Bunge's 1968
+expedition (582/625). Served by GitHub Pages from `main`: https://wilfredwaters.github.io/atlanta-geographical-expedition/
 
 ## Files
 
@@ -10,6 +11,10 @@ SVI 2022 (201 tracts with scores, 203 total). Served by GitHub Pages from
   grep, or read by line range.
 - `SUMMARY.md` — method and findings, in plain language.
 - `README.md` — project and Meetup context.
+- `counties.js` — generated Fulton and Wayne data (`EXTRA_GEO`,
+  `EXTRA_DATA`). Don't edit; rerun `tools/build_counties.py` (usage in
+  its docstring). `--check` compares its output with DeKalb's `DATA`:
+  199/201 match; 2 differ only in the order of exactly tied measures.
 
 No build step, no package manager. Libraries load from CDNs.
 
@@ -38,10 +43,17 @@ Hand-written code sits in the last `<script>` blocks:
 - `popupHtml`, `explainText`, `grokUrl` build popups; hover popups bind to
   every overlay in the layer control.
 - The About panel is static HTML in `<div id="about">`.
+- Fulton and Wayne features are added to every overlay except
+  `noHsGroup` in the block just above `NOHS_PRI`; `DATA` is extended with
+  `EXTRA_DATA`. `CTY` maps the 5-digit county FIPS to name, state and
+  mean structural share (DeKalb 70.5, Fulton 71.1, Wayne 66.5) for
+  popups, explanations and the Grok question. `COUNTY_VIEW` drives the
+  county buttons (top right).
 
 ## No-diploma layer (`noHsGroup`)
 
-On by default and first in the layer list. Outlines only, weight 4.
+DeKalb only. On by default and first in the layer list. Outlines only,
+weight 4.
 
 - Magenta `#e6007e`: `NOHS_PRI`, 11 tracts meeting all three tests —
   NOHSDP in top 3 structural drivers; `share_NOHSDP` ≥ county 75th
@@ -50,7 +62,6 @@ On by default and first in the layer list. Outlines only, weight 4.
   212.10, 212.24, 212.29.
 
 Both lists are hard-coded. Recompute them if the data changes.
-The layer label still says "(red)"; the outline is magenta.
 
 Overall SVI ramp: `#ffffcc`, `#c2e699`, `#78c679`, `#238443`.
 

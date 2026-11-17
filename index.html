@@ -51,6 +51,7 @@
 
         
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="counties.js"></script>
     
                     <style>
                         .foliumpopup {
@@ -87,9 +88,10 @@
 <div id="about"><div class="hd"><span>About this map</span><button class="btn" onclick="document.getElementById('about').style.display='none';document.getElementById('reopen').style.display='block'">Close</button></div><div class="bd"><h1>About this map</h1>
 <h2>The goal</h2>
 <p>This map supports equity in DeKalb County, Georgia. The aim is to find the structural causes of vulnerability so they can be removed. "Structural" means conditions built into how housing, jobs, health care and money work, not traits of the people who live there. The no-diploma layer narrows this to one structural driver, lack of a high school diploma. Across four of the five Dunwoody cluster elementary schools there are 673 unused seats (capacity minus enrollment, from an undated DeKalb planning table). This app is meant to help understand opportunities to fill them in a way that targets vulnerability reduction in other census tracts.</p>
+<p>The map also covers Fulton County, Georgia, so both sides of Atlanta are shown, and Wayne County, Michigan, home of Detroit, where William Bunge ran the first Detroit Geographical Expedition in 1968. Use the county buttons at top right to move between them. The no-diploma layer is DeKalb only. The findings below are for DeKalb.</p>
 <h2>What the CDC Social Vulnerability Index is</h2>
 <p>The CDC Social Vulnerability Index (SVI) shows which places may need the most help in a disaster or crisis. It uses 16 measures, such as poverty, people without health insurance, and households with no car.</p>
-<p>The map works with census tracts. A census tract is a small neighborhood area set by the Census Bureau, usually with 2,500 to 8,000 people. DeKalb has 203 tracts. 201 of them have SVI data, and this map uses all 201.</p>
+<p>The map works with census tracts. A census tract is a small neighborhood area set by the Census Bureau, usually with 2,500 to 8,000 people. DeKalb has 203 tracts. 201 of them have SVI data, and this map uses all 201. Fulton has 327 tracts (325 with data) and Wayne has 625 (582 with data). Tracts without data are shown in gray.</p>
 <p>Each measure is turned into a percentile. A percentile tells you how a tract compares to every other tract in the United States. A percentile of 0.80 means the tract ranks higher than 80% of US tracts on that measure. The 16 percentiles are added up and ranked again. That gives one overall score from 0 to 1. Higher means more vulnerable.</p>
 <h2>Your questions and what we found</h2>
 <p><strong>Which tracts are included?</strong> You first tried leaving out the least vulnerable tracts, those in the lowest quarter nationally (a score below 0.25). Then you chose to use all tracts. So every result below covers all 201 tracts.</p>
@@ -155,6 +157,7 @@
 <li><strong>#1 structural driver:</strong> the biggest structural measure in each tract.</li>
 <li><strong>Minority share:</strong> the percent of residents who are a racial or ethnic minority.</li>
 <li><strong>No-diploma layer:</strong> magenta outlines mark the priority tracts described above, and blue outlines mark the Dunwoody cluster tracts. Both are outlines only, with no fill.</li>
+<li><strong>County buttons</strong> (top right): jump to DeKalb, Fulton or Wayne (Detroit).</li>
 <li><strong>Tap any tract</strong> to see its score, top drivers and rates with margins of error.</li>
 <li><strong>Switch the background map</strong> with the layer button in the top right (street map, gray map or topographic map).</li>
 </ul>
@@ -435,6 +438,25 @@ var minority_data={"type": "FeatureCollection", "features": [{"id": "0", "type":
 function mcol(v,x){if(x)return '#bbbbbb'; if(v===null)return '#eeeeee'; return v>=97?'#3f007d':v>=90?'#6a51a3':v>=75?'#9e9ac8':v>=50?'#cbc9e2':'#f2f0f7';}
 var minority_layer=L.geoJson(minority_data,{style:function(f){return {fillColor:mcol(f.properties.m,f.properties.x),fillOpacity:0.75,color:'white',weight:0.5};},onEachFeature:function(f,l){l.bindPopup(f.properties.p,{maxWidth:320});}});
 
+// Fulton (Atlanta west of DeKalb) and Wayne, MI (Detroit, home of Bunge's
+// 1968 Detroit Geographical Expedition) join every overlay except the
+// no-diploma one, which is DeKalb only. Shapes and values: counties.js.
+var DRV_COL={POV150:'#e41a1c',UNEMP:'#377eb8',HBURD:'#4daf4a',NOHSDP:'#984ea3',UNINSUR:'#ff7f00',LIMENG:'#a65628',MUNIT:'#f781bf',MOBILE:'#999999',CROWD:'#66c2a5',NOVEH:'#000000',MINRTY:'#ffd92f'};
+function extraStyle(fill){ return function(f){ return {fillColor:fill(f.properties),fillOpacity:0.75,color:'white',weight:0.5}; }; }
+L.geoJson(EXTRA_GEO,{style:extraStyle(function(p){ return sviCol(p.r); })}).addTo(choropleth_16a573e410c3036aa9f5ae79511ce959);
+L.geoJson(EXTRA_GEO,{style:function(f){ return {fillColor:DRV_COL[f.properties.d]||'#ccc',fillOpacity:0.7,color:'white',weight:0.5}; }}).eachLayer(function(l){ geo_json_cbd8c3b3a785c6e242ed10f7b457e624.addLayer(l); });
+L.geoJson(EXTRA_GEO,{style:{color:'#555',fillOpacity:0,weight:0.3}}).eachLayer(function(l){ geo_json_61cc50ef9183145099fdb1e3ebcef135.addLayer(l); });
+L.geoJson(EXTRA_GEO,{style:extraStyle(function(p){ return mcol(p.m,false); })}).eachLayer(function(l){ minority_layer.addLayer(l); });
+
+// Jump between counties: Wayne is 600 miles from Atlanta.
+var COUNTY_VIEW={'DeKalb':[33.77,-84.23,11],'Fulton':[33.84,-84.47,10],'Wayne (Detroit)':[42.28,-83.26,10]};
+var jump=L.control({position:'topright'});
+jump.onAdd=function(){ var div=L.DomUtil.create('div','leaflet-bar'); div.style.cssText='background:#fff;padding:4px;font:12px sans-serif';
+  Object.keys(COUNTY_VIEW).forEach(function(k){ var b=L.DomUtil.create('button','btn',div); b.textContent=k; b.style.cssText='display:block;width:100%;margin:2px 0;padding:3px 6px';
+    b.onclick=function(){ var v=COUNTY_VIEW[k]; map_81f614882c315cc8a20dc059629ce4e3.setView([v[0],v[1]],v[2]); }; });
+  L.DomEvent.disableClickPropagation(div); return div; };
+jump.addTo(map_81f614882c315cc8a20dc059629ce4e3);
+
 var NOHS_PRI = ["13089021420", "13089023431", "13089022012", "13089021410", "13089023427", "13089021204", "13089021308", "13089022011", "13089021310", "13089021812", "13089022016"], NOHS_CLU = ["13089021210", "13089021224", "13089021229"];
 var noHsSrc = geo_json_bf9a23d19065cc6d2d806ecafd7be546;
 var noHsPri = [], noHsClu = [];
@@ -459,7 +481,7 @@ var layer_control_097befece45624d0ea761f79e99176c6_layers = {
                     "USGS Topo" : tile_topo,
                 },
                 overlays :  {
-                    "No-diploma priority (red) + Dunwoody cluster (blue)" : noHsGroup,
+                    "No-diploma priority (magenta) + Dunwoody cluster (blue), DeKalb only" : noHsGroup,
                     "Minority share" : minority_layer,
                     "Overall SVI" : choropleth_16a573e410c3036aa9f5ae79511ce959,
                     "#1 structural driver" : geo_json_cbd8c3b3a785c6e242ed10f7b457e624,
@@ -484,15 +506,18 @@ var DATA={"13089020100": {"n": "Census Tract 201", "r": 0.391, "t": [["AGE17", 1
 
 var LAB={POV150:'Below 150% poverty',UNEMP:'Unemployment',HBURD:'Housing cost burden',NOHSDP:'No high school diploma',UNINSUR:'Uninsured',AGE65:'Age 65+',AGE17:'Age 17 and under',DISABL:'Disability',SNGPNT:'Single-parent households',LIMENG:'Limited English',MINRTY:'Minority status',MUNIT:'Multi-unit housing',MOBILE:'Mobile homes',CROWD:'Crowding',NOVEH:'No vehicle',GROUPQ:'Group quarters'};
 var MEAN={POV150:'people with income below 1.5 times the poverty line',UNEMP:'people who want a job but cannot find one',HBURD:'households that spend 30% or more of their income on housing',NOHSDP:'adults without a high school diploma',UNINSUR:'people with no health insurance',AGE65:'people aged 65 or older',AGE17:'children aged 17 or younger',DISABL:'people with a disability',SNGPNT:'households with one parent raising children',LIMENG:'people who speak English less than well',MINRTY:'people who are a racial or ethnic minority',MUNIT:'homes in buildings with 10 or more units',MOBILE:'homes that are mobile homes',CROWD:'homes with more people than rooms',NOVEH:'households with no vehicle',GROUPQ:'people living in group quarters, such as dorms, nursing homes or jails'};
-var COUNTY_SS=70.5;
+Object.assign(DATA,EXTRA_DATA);
+// County by first 5 FIPS digits: name, state, mean structural share (%).
+var CTY={'13089':['DeKalb County','Georgia',70.5],'13121':['Fulton County','Georgia',71.1],'26163':['Wayne County','Michigan',66.5]};
+function cty(id){ return CTY[id.slice(0,5)]; }
 function grp(v){return v<0.25?'Low (0.00-0.25)':v<0.5?'Low-moderate (0.25-0.50)':v<0.75?'Moderate-high (0.50-0.75)':'High (0.75-1.00)';}
 function f1(x){return (Math.round(x*10)/10).toFixed(1);}
 function rate(a){return a?f1(a[0])+'% (&plusmn;'+f1(a[1])+')':'n/a';}
 function list(a){if(a.length<2)return a.join('');if(a.length==2)return a[0]+' and '+a[1];return a.slice(0,-1).join(', ')+' and '+a[a.length-1];}
 function grokUrl(id){var d=DATA[id];
- var q="I'm looking at CDC Social Vulnerability Index 2022 data for "+d.n+", DeKalb County, Georgia (FIPS "+id+"). Overall score (national percentile) "+d.r.toFixed(3)+". Top 5 contributors to the score, as shares of the summed percentiles: "+d.t.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+". Top 3 structural drivers: "+d.s.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+" ("+f1(d.s3)+"% combined). Structural share of score: "+f1(d.ss)+"% (county average 70.5%). Explain in plain language what this means for equity and which structural causes could be addressed.";
+ var q="I'm looking at CDC Social Vulnerability Index 2022 data for "+d.n+", "+cty(id)[0]+", "+cty(id)[1]+" (FIPS "+id+"). Overall score (national percentile) "+d.r.toFixed(3)+". Top 5 contributors to the score, as shares of the summed percentiles: "+d.t.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+". Top 3 structural drivers: "+d.s.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+" ("+f1(d.s3)+"% combined). Structural share of score: "+f1(d.ss)+"% (county average "+f1(cty(id)[2])+"%). Explain in plain language what this means for equity and which structural causes could be addressed.";
  return 'https://grok.com/?q='+encodeURIComponent(q.slice(0,1500));}
-function popupHtml(id){var d=DATA[id];if(!d)return '';var h='<b>'+d.n+', DeKalb County, Georgia</b>';
+function popupHtml(id){var d=DATA[id];if(!d)return '';var h='<b>'+d.n+', '+cty(id)[0]+', '+cty(id)[1]+'</b>';
  if(d.r===undefined){return h+'<br>No vulnerability score is available for this tract.<br>Minority status: '+rate(d.MINRTY);}
  h+='<br>Overall vulnerability score (0-1): <b>'+d.r.toFixed(3)+'</b> ('+grp(d.r)+')';
  h+='<br><b>Top 5 contributors</b> (share of the score)<ol style="margin:2px 0 4px 18px;padding:0">'+d.t.map(function(x){return '<li>'+LAB[x[0]]+': '+f1(x[1])+'%</li>';}).join('')+'</ol>';
@@ -504,7 +529,7 @@ function popupHtml(id){var d=DATA[id];if(!d)return '';var h='<b>'+d.n+', DeKalb 
  return h;}
 function explainText(id){var d=DATA[id];var tr=id.slice(5);var trn=String(parseInt(tr.slice(0,4),10))+(tr.slice(4)=='00'?'':'.'+tr.slice(4));
  var p=[];
- p.push('<b>What this place is.</b> A census tract is a small neighborhood area drawn by the Census Bureau. It usually has 2,500 to 8,000 people. This one is '+d.n+'. Its ID number (FIPS code) is '+id+'. The first 2 digits (13) mean Georgia. The next 3 (089) mean DeKalb County. The last 6 ('+tr+') mean tract '+trn+'.');
+ p.push('<b>What this place is.</b> A census tract is a small neighborhood area drawn by the Census Bureau. It usually has 2,500 to 8,000 people. This one is '+d.n+'. Its ID number (FIPS code) is '+id+'. The first 2 digits ('+id.slice(0,2)+') mean '+cty(id)[1]+'. The next 3 ('+id.slice(2,5)+') mean '+cty(id)[0]+'. The last 6 ('+tr+') mean tract '+trn+'.');
  if(d.r===undefined){p.push('The CDC has no vulnerability score for this tract. This usually happens when very few people live there, so the survey numbers are not reliable.');return p.map(function(x){return '<p>'+x+'</p>';}).join('');}
  var pct=Math.round(d.r*100);
  p.push('<b>The score.</b> The overall vulnerability score is '+d.r.toFixed(3)+'. That means this tract is more vulnerable than about '+pct+'% of all census tracts in the United States. Scores are split into four groups, called quartiles. This tract is in the '+grp(d.r)+' group.');
@@ -512,8 +537,8 @@ function explainText(id){var d=DATA[id];var tr=id.slice(5);var trn=String(parseI
  p.push('<b>What drives the score.</b> The score adds up 16 measures. If they all counted the same, each would be 6.25% of the score. Here the biggest one is '+LAB[t1[0]]+' at '+f1(t1[1])+'% of the score. That is about '+times.toFixed(1)+' times the average share.');
  p.push('<b>The top 5 contributors</b> are: '+d.t.map(function(x){return LAB[x[0]]+' ('+f1(x[1])+'%), meaning '+MEAN[x[0]];}).join('; ')+'.');
  p.push('<b>Policy levers.</b> Structural drivers are conditions that policy can change. The top 3 here are '+list(d.s.map(function(x){return LAB[x[0]]+' ('+f1(x[1])+'%)';}))+'. Together they make up '+f1(d.s3)+'% of the score. These are the places where action could lower vulnerability the most.');
- var diff=d.ss-COUNTY_SS;var cmp=Math.abs(diff)<1?'about the same as':(diff>0?'higher than':'lower than');
- p.push('<b>Structural share.</b> Structural measures make up '+f1(d.ss)+'% of this tract\'s score. That is '+cmp+' the DeKalb average of '+f1(COUNTY_SS)+'%. '+(diff>=1?'So more of the vulnerability here comes from things policy can change.':diff<=-1?'So more of the vulnerability here comes from who lives here, such as age or household type.':'So this tract is typical for the county.'));
+ var cs=cty(id)[2], diff=d.ss-cs;var cmp=Math.abs(diff)<1?'about the same as':(diff>0?'higher than':'lower than');
+ p.push('<b>Structural share.</b> Structural measures make up '+f1(d.ss)+'% of this tract\'s score. That is '+cmp+' the '+cty(id)[0].replace(' County','')+' average of '+f1(cs)+'%. '+(diff>=1?'So more of the vulnerability here comes from things policy can change.':diff<=-1?'So more of the vulnerability here comes from who lives here, such as age or household type.':'So this tract is typical for the county.'));
  var n=d.q.length,c=0,cum=[];for(var i=0;i<d.sh.length;i++){c+=d.sh[i];cum.push(c);}
  var names=d.q.map(function(v){return LAB[v];});var m;
  if(n==1)m='One measure, '+names[0]+', is '+f1(cum[0])+'% of the score by itself. That alone reaches a quarter (25%).';
