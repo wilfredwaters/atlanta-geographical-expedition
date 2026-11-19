@@ -1,0 +1,3 @@
+# Local source data with reuse limits (GDOT, see CLAUDE.md); never publish.
+data/
+__pycache__/

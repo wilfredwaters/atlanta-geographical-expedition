@@ -261,12 +261,62 @@ function sideOn(){
   map2.setView(map.getCenter(), map.getZoom(), {animate:false});
   if(past2){ map2.removeLayer(past2); }
   past2 = pastLayer(state.view, PAST, false).addTo(map2);
+  tramsSync();
 }
 
 function sideOff(){
   document.body.classList.remove('side');
   map.invalidateSize();
 }
+
+// --- Streetcars ---------------------------------------------------------
+// Atlanta 1928 and 1871-1920 (OpenHistoricalMap, CC0),
+// Detroit Dec 1941 (rebuilt from the DSR map; trams.js). Own pane above
+// both eras and never clipped, so the lines are a fixed reference that
+// lines up today's map with the 1930s one.
+
+var TRAM = 'trams';
+var TRAM_COL = '#6a1b9a';
+var TRAM_SRC = {
+  Atlanta: 'OpenHistoricalMap (CC0), from the 1928 Atlas of Atlanta and vicinity (Emory); OpenHistoricalMap (CC0), from The Trolley Titans',
+  Detroit: 'Rebuilt by eye from the Dec 1941 DSR rail map (Schramm Collection, detroittransithistory.info), traced on OpenStreetMap streets. Approximate.'
+};
+map.createPane(TRAM).style.zIndex = 445;
+
+function tramHtml(p){
+  var when = p.y === 'early' ? p.s+'&ndash;'+p.e : p.y;
+  var h = '<b>Streetcar line, '+when+'</b> ('+esc(p.c)+')';
+  if(p.n){ h += '<br>'+esc(p.n)+(p.st && p.st !== p.n ? ' line, on '+esc(p.st) : ''); }
+  else if(p.st){ h += '<br>On '+esc(p.st); }
+  if(p.via){ h += ' ('+esc(p.via)+')'; }
+  if(p.o){ h += '<br>Operator: '+esc(p.o); }
+  if(p.note){ h += '<br><small>'+esc(p.note)+'</small>'; }
+  return h + '<br><small style="color:#555">'+(p.c === 'Atlanta' ? TRAM_SRC.Atlanta.split('; ')[p.y === 'early' ? 1 : 0] : TRAM_SRC[p.c])+'</small>';
+}
+
+function tramTip(p){
+  var when = p.y === 'early' ? p.s+'&ndash;'+p.e : p.y;
+  return 'Streetcar '+when+(p.n ? ' &middot; '+esc(p.n) : p.st ? ' &middot; '+esc(p.st) : '');
+}
+
+function tramLayer(){
+  return L.geoJson(TRAMS, {pane:TRAM, renderer:L.svg({pane:TRAM}),
+    style:function(f){ var early = f.properties.y === 'early';
+      return {color:TRAM_COL, weight:early ? 2 : 3, opacity:early ? 0.75 : 0.95, dashArray:early ? '5 5' : null}; },
+    onEachFeature:function(f,l){ l.bindPopup(tramHtml(f.properties), {maxWidth:300});
+      tipOn(l, function(){ return tramTip(f.properties); }); }});
+}
+
+var trams = tramLayer().addTo(map), trams2 = null;
+layer_control_097befece45624d0ea761f79e99176c6.addOverlay(trams, 'Historic streetcar lines (Atlanta 1871-1928, Detroit 1941)');
+
+// The side-by-side map mirrors the streetcar toggle.
+function tramsSync(){
+  if(!map2){ return; }
+  if(!trams2){ map2.createPane(TRAM).style.zIndex = 445; trams2 = tramLayer(); }
+  if(map.hasLayer(trams)){ trams2.addTo(map2); } else { map2.removeLayer(trams2); }
+}
+map.on('overlayadd overlayremove', tramsSync);
 
 // --- Mode switching ---------------------------------------------------
 
@@ -345,6 +395,10 @@ lgHolc.innerHTML = '<b>1930s HOLC grade</b>' + ['A','B','C','D'].map(function(g)
   + '<small>Tract score: area-weighted grade, A=1 to D=4</small>';
 var lgEl = document.getElementById('lg');
 if(lgEl){ lgEl.appendChild(lgHolc); }
+var lgTram = document.createElement('div');
+lgTram.innerHTML = '<b>Streetcar lines</b><div><i style="background:none;border:0;border-top:3px solid '+TRAM_COL+';height:0;margin-top:5px"></i>Atlanta 1928, Detroit 1941</div>'
+  + '<div><i style="background:none;border:0;border-top:2px dashed '+TRAM_COL+';height:0;margin-top:5px"></i>Atlanta 1871-1920</div>';
+if(lgEl){ lgEl.appendChild(lgTram); }
 function legendShow(on){ lgHolc.style.display = on ? 'block' : 'none'; }
 
 // Mean SVI by the grade covering most of each tract, per metro.

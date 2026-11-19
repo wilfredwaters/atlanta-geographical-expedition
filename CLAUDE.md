@@ -24,6 +24,17 @@ Bunge's 1968 expedition), Oakland (343/350) and Macomb (236/243), MI. Served by 
   Inequality S3 tiles), HOLC grade polygons with area-description
   popups, or tract redlining score. Fills the About chart
   (`#holc-chart`, `#holc-rho`).
+- `trams.js` — generated streetcar lines (`TRAMS`). Don't edit; rerun
+  `tools/build_trams.py` (usage in its docstring). Atlanta 1928 and
+  1871-1920: OpenHistoricalMap (CC0). Never publish GDOT's
+  HISTORIC_TROLLEY.gdb or the Clearinghouse ATLANTA_STREETCAR_1928 layer
+  derived from it: GDOT forbids altering or transforming them without
+  written consent (requested; see Wil's notes). `data/` is git-ignored. Detroit Dec 1941: no
+  vector source exists; `tools/dsr_1941.csv` lists each track street and
+  its cross-street termini, read by eye from the 1941 DSR map, traced
+  along that street's own OSM ways. Edit the CSV to fix a line.
+  Drawn by `redlining.js` in pane `trams` (z 445, never clipped), mirrored
+  on the side-by-side map; overlay "Historic streetcar lines".
 
 No build step, no package manager. Libraries load from CDNs.
 
