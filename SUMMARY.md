@@ -112,6 +112,16 @@ grades recorded it, and lending rules then deepened it. Small groups
 (Atlanta A, n=7) are unstable. Neighboring tracts are alike, so the
 effective sample is smaller than the count. The maps cover city cores only.
 
+## Streetcars
+
+Purple lines: Atlanta's 1928 network and its 1871-1920 lines (dashed),
+both from OpenHistoricalMap; Detroit's December 1941
+network, rebuilt from the Department of Street Railways map onto today's
+streets (24 street runs; ends approximate; 4 line names not on the map).
+They stay on top in every compare mode, as a fixed reference between
+today's map and the 1930s one. Appraisers in 1938 counted "street car
+transportation" as a plus. No statistics yet.
+
 ## Limits
 - The numbers come from a survey, so each tract has a margin of error. For poverty, the typical margin is about plus or minus 9 points.
 - The data describes neighborhoods, not individual people.
