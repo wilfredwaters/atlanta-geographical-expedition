@@ -80,6 +80,53 @@ function tractHtml(id){
 }
 
 
+// --- Hover tip --------------------------------------------------------
+// In compare modes the full SVI popup covers what you are comparing, so
+// hovering shows one short line instead; click still opens the popup.
+
+var tip = document.createElement('div');
+tip.id = 'holc-tip';
+document.body.appendChild(tip);
+document.addEventListener('mousemove', function(e){
+  tip.style.left = (e.clientX + 14) + 'px';
+  tip.style.top = (e.clientY + 14) + 'px';
+});
+
+function gradesShort(id){
+  var t = HOLC_TRACT[id];
+  if(!t || t[0] < MIN_COVER){ return '1930s: not graded'; }
+  return '1930s: ' + ['A','B','C','D'].map(function(g,i){ return t[2+i] >= 0.05 ? g+' '+Math.round(t[2+i]*100)+'%' : null; }).filter(Boolean).join(', ');
+}
+
+function tractTip(id){
+  var d = window.SVI.DATA[id];
+  if(!d){ return ''; }
+  var svi = d.r === undefined ? 'no SVI' : 'SVI <b>'+d.r.toFixed(2)+'</b>';
+  return esc(d.n.replace('Census ', ''))+' &middot; '+svi+' &middot; '+gradesShort(id);
+}
+
+function areaTip(p){
+  return '<b style="color:'+HOLC_EDGE[p.g]+'">'+p.g+'</b> '+esc(p.c)+' '+esc(p.l)+(p.n ? ' &middot; '+esc(p.n) : '');
+}
+
+function tipOn(l, html){
+  l.on('mouseover', function(){
+    if(!window.SVI.quiet){ return; }
+    tip.innerHTML = html(); tip.style.display = 'block';
+  });
+  l.on('mouseout', function(){ tip.style.display = 'none'; });
+}
+
+// Every tract shape in the SVI overlays gets the tip.
+function tipAll(l){
+  if(l.eachLayer && !l.feature){ l.eachLayer(tipAll); return; }
+  if(!l.feature){ return; }
+  var id = l.feature.properties.GEOID || l.feature.id;
+  tipOn(l, function(){ return tractTip(id); });
+}
+var ov = layer_control_097befece45624d0ea761f79e99176c6_layers.overlays;
+for(var k in ov){ tipAll(ov[k]); }
+
 // --- Layers (factories: Side by side needs a second copy) --------------
 
 function scanLayer(pane){
@@ -94,7 +141,8 @@ function areaLayer(pane, outline){
     style:function(f){ var g=f.properties.g;
       return outline ? {color:HOLC_EDGE[g], weight:3, fillColor:HOLC_COL[g], fillOpacity:0, opacity:1}
                      : {color:HOLC_EDGE[g], weight:1, fillColor:HOLC_COL[g], fillOpacity:0.75, opacity:1}; },
-    onEachFeature:function(f,l){ l.bindPopup(areaHtml(f.properties), {maxWidth:320, maxHeight:Math.round(window.innerHeight*0.6)}); },
+    onEachFeature:function(f,l){ l.bindPopup(areaHtml(f.properties), {maxWidth:320, maxHeight:Math.round(window.innerHeight*0.6)});
+      tipOn(l, function(){ return areaTip(f.properties); }); },
     attribution:CITE});
 }
 
@@ -112,7 +160,8 @@ function tractLayer(pane){
       filter:function(f){ var t=HOLC_TRACT[f.properties.GEOID||f.id]; return t && t[0] >= MIN_COVER; },
       style:function(f){ var t=HOLC_TRACT[f.properties.GEOID||f.id], k=hrsGrade(t[1]);
         return {fillColor:HOLC_COL[k], fillOpacity:0.8, color:'white', weight:0.5}; },
-      onEachFeature:function(f,l){ l.bindPopup(tractHtml(f.properties.GEOID||f.id), {maxWidth:300}); },
+      onEachFeature:function(f,l){ var id=f.properties.GEOID||f.id; l.bindPopup(tractHtml(id), {maxWidth:300});
+        tipOn(l, function(){ return tractTip(id); }); },
       attribution:CITE}).addTo(g);
   });
   return g;
@@ -232,6 +281,9 @@ function apply(){
   sideOff();
   ui.op.style.display = state.mode === MODE.OVER && state.view !== VIEW.AREA ? 'block' : 'none';
   legendShow(state.mode !== MODE.OFF);
+  window.SVI.quiet = state.mode !== MODE.OFF;
+  tip.style.display = 'none';
+  if(window.SVI.quiet){ map.closePopup(); }
 
   if(state.mode === MODE.OFF){ return; }
   if(state.mode === MODE.SIDE){ sideOn(); return; }

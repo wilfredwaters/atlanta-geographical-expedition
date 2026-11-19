@@ -106,10 +106,11 @@ def areas(src):
                     if v:
                         props[k] = v
 
-            # Prefer the form's own name when the polygon has none.
-            if not props['n'] and props.get('name'):
-                props['n'] = props['name']
-            props.pop('name', None)
+            # Prefer the form's own name when the polygon has none; skip
+            # names that only repeat the city ("Detroit, Mich.").
+            form_name = props.pop('name', '')
+            if not props['n'] and not form_name.startswith(city):
+                props['n'] = form_name
             feats.append({'type': 'Feature', 'properties': props,
                           'geometry': f['geometry']})
     return {'type': 'FeatureCollection', 'features': feats}
