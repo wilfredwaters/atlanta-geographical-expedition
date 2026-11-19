@@ -65,10 +65,10 @@ function areaHtml(p){
   var h = '<b style="color:'+HOLC_EDGE[p.g]+'">'+p.g+' &middot; '+HOLC_NAME[p.g]+'</b><br><b>'+esc(p.c)+' '+esc(p.l)+(p.n?' &mdash; '+esc(p.n):'')+'</b>';
   AD.forEach(function(f){
     if(!p[f[0]]){ return; }
-    h += '<div style="margin-top:3px"><small style="color:#555">'+f[1]+'</small><br>'+esc(p[f[0]])+'</div>';
+    h += '<div style="margin-top:3px"><span style="color:#555">'+f[1]+'</span><br>'+esc(p[f[0]])+'</div>';
   });
   h += '<div style="margin-top:6px"><a href="'+p.u+'" target="_blank" rel="noopener">Original form and scan (Mapping Inequality)</a></div>';
-  h += '<small style="color:#555">1930s appraisers\' words, kept as written.</small>';
+  h += '<span style="color:#555">1930s appraisers\' words, kept as written.</span>';
   return h;
 }
 
@@ -290,8 +290,8 @@ function tramHtml(p){
   else if(p.st){ h += '<br>On '+esc(p.st); }
   if(p.via){ h += ' ('+esc(p.via)+')'; }
   if(p.o){ h += '<br>Operator: '+esc(p.o); }
-  if(p.note){ h += '<br><small>'+esc(p.note)+'</small>'; }
-  return h + '<br><small style="color:#555">'+(p.c === 'Atlanta' ? TRAM_SRC.Atlanta.split('; ')[p.y === 'early' ? 1 : 0] : TRAM_SRC[p.c])+'</small>';
+  if(p.note){ h += '<br><span style="color:#555">'+esc(p.note)+'</span>'; }
+  return h + '<br><span style="color:#555">'+(p.c === 'Atlanta' ? TRAM_SRC.Atlanta.split('; ')[p.y === 'early' ? 1 : 0] : TRAM_SRC[p.c])+'</span>';
 }
 
 function tramTip(p){
