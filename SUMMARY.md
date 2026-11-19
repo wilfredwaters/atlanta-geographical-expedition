@@ -69,6 +69,49 @@ Every tract's popup has an **Explain this tract** button. Tap it to get a plain-
 - **Fix structural drivers with: ChatGPT, Claude, Grok:** the last line of each popup links to all three. Each opens in a new tab with the same question, which includes that tract's numbers. Claude and Grok fill in the question and wait for you to press send; ChatGPT can send it as soon as it opens.
 - **Switch the background map** with the layer button in the top right (street map, gray map or topographic map).
 
+## Redlining then, vulnerability now
+
+Question: does a tract's 1930s HOLC grade relate to its SVI 2022 score?
+
+Data: Mapping Inequality's HOLC polygons and area descriptions for
+Atlanta (1938), Detroit (1939) and Pontiac (1937). Each tract gets a
+historic redlining score: the area-weighted mean grade (A=1 to D=4) of
+the graded part. Only tracts at least 20% graded count: 118 in Atlanta,
+461 in Metro Detroit. Built by `tools/build_holc.py`.
+
+Mean SVI 2022 by the grade covering most of the tract:
+
+| Grade | Atlanta (n) | Detroit (n) |
+|---|---|---|
+| A | 0.24 (7) | 0.35 (27) |
+| B | 0.16 (19) | 0.57 (70) |
+| C | 0.36 (53) | 0.62 (241) |
+| D | 0.63 (39) | 0.75 (123) |
+
+Spearman rho, redlining score against SVI:
+
+| SVI part | Atlanta | Detroit |
+|---|---|---|
+| Overall | 0.54 | 0.28 |
+| Socioeconomic | 0.52 | 0.28 |
+| Household | 0.12 | 0.14 |
+| Racial and ethnic minority | 0.69 | 0.03 |
+| Housing and transport | 0.45 | 0.33 |
+
+Findings:
+
+- In both metros, D tracts are the most vulnerable today on average.
+- In Atlanta the link is stronger and runs mostly through race: redlined
+  areas are still mostly Black.
+- In Detroit the race theme hardly tracks the old grades. Most graded
+  tracts are now majority minority whatever their grade, after white
+  flight. Income and housing still track them.
+
+Limits: correlation, not cause. Much of the gap predates the maps; the
+grades recorded it, and lending rules then deepened it. Small groups
+(Atlanta A, n=7) are unstable. Neighboring tracts are alike, so the
+effective sample is smaller than the count. The maps cover city cores only.
+
 ## Limits
 - The numbers come from a survey, so each tract has a margin of error. For poverty, the typical margin is about plus or minus 9 points.
 - The data describes neighborhoods, not individual people.

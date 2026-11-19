@@ -15,6 +15,15 @@ Bunge's 1968 expedition), Oakland (343/350) and Macomb (236/243), MI. Served by 
   `EXTRA_DATA`). Don't edit; rerun `tools/build_counties.py` (usage in
   its docstring). `--check` compares its output with DeKalb's `DATA`:
   199/201 match; 2 differ only in the order of exactly tied measures.
+- `holc.js` — generated 1930s redlining data (`HOLC_AREAS`, `HOLC_TRACT`,
+  `HOLC_STATS`). Don't edit; rerun `tools/build_holc.py` (needs the
+  duckdb CLI; overlap SQL in `tools/holc_overlap.sql`).
+- `redlining.js` — the "Compare with 1930s redlining" panel: Swipe,
+  Side by side (second map `#map2`, synced, linked cursor ring),
+  Overlay (opacity slider). 1930s layer: original scans (Mapping
+  Inequality S3 tiles), HOLC grade polygons with area-description
+  popups, or tract redlining score. Fills the About chart
+  (`#holc-chart`, `#holc-rho`).
 
 No build step, no package manager. Libraries load from CDNs.
 
@@ -70,6 +79,17 @@ weight 4.
 Both lists are hard-coded. Recompute them if the data changes.
 
 Overall SVI ramp: `#ffffcc`, `#c2e699`, `#78c679`, `#238443`.
+
+## Redlining (HOLC)
+
+Source: Mapping Inequality (University of Richmond DSL); rasters and
+spatial data CC BY-NC, so keep the map non-commercial and cited.
+Cities: Atlanta 1938, Detroit 1939, Pontiac 1937. Tract score = area-
+weighted grade (A=1..D=4) of the graded part; tracts under 20% graded
+are excluded (`MIN_COVER`/`HOLC_MIN`). `holcLine` in `index.html` adds
+the grades to every SVI popup and to the AI question. Swipe clips
+`overlayPane` (left) and pane `past` (right) with CSS `clip`, redone on
+every map move.
 
 ## Data limits
 

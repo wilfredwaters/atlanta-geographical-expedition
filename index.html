@@ -52,6 +52,7 @@
         
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
     <script src="counties.js"></script>
+    <script src="holc.js"></script>
     
                     <style>
                         .foliumpopup {
@@ -85,6 +86,22 @@
 #lg{position:fixed;bottom:22px;right:8px;z-index:9998;background:rgba(255,255,255,.93);padding:6px 8px;font:11px sans-serif;border:1px solid #999;border-radius:6px;max-height:40vh;overflow-y:auto;max-width:200px}
 /* County names: black with a white halo, centered on the label point. */
 .cty-lbl span{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;color:#000;font:bold 15px -apple-system,Segoe UI,Arial,sans-serif;text-shadow:-2px 0 #fff,2px 0 #fff,0 -2px #fff,0 2px #fff,-1px -1px #fff,1px 1px #fff,-1px 1px #fff,1px -1px #fff}
+/* 1930s redlining compare: panel, swipe bar, side-by-side map. */
+.holc-ctl{background:#fff;padding:6px 8px;font:12px sans-serif;max-width:250px}
+.holc-ctl .seg{display:flex;flex-wrap:wrap;gap:3px;margin:4px 0}
+.holc-ctl .seg button{font:12px sans-serif;padding:3px 6px;border:1px solid #888;border-radius:4px;background:#fff;cursor:pointer}
+.holc-ctl .seg button.on{background:#222;color:#fff;border-color:#222}
+.holc-ctl .lbl{color:#555;margin-top:4px}
+.swipe-bar{position:absolute;top:0;bottom:0;width:4px;margin-left:-2px;background:#222;z-index:800;cursor:ew-resize;touch-action:none;display:none}
+.swipe-knob{position:absolute;top:50%;left:-14px;width:32px;height:32px;margin-top:-16px;border-radius:50%;background:#222;color:#fff;font:bold 18px/30px sans-serif;text-align:center}
+.swipe-bar span{position:absolute;top:8px;white-space:nowrap;background:#222;color:#fff;font:bold 12px sans-serif;padding:3px 6px;border-radius:4px}
+.swipe-l{right:8px}.swipe-r{left:8px}
+#map2{display:none}
+body.side #map_81f614882c315cc8a20dc059629ce4e3{width:50%}
+body.side #map2{display:block;position:fixed;top:0;right:0;width:50%;height:100%;border-left:3px solid #222}
+@media (max-width:700px){body.side #map_81f614882c315cc8a20dc059629ce4e3{width:100%;height:50%}body.side #map2{top:50%;width:100%;height:50%;border-left:0;border-top:3px solid #222}}
+.side-tag{background:#222;color:#fff;font:bold 12px sans-serif;padding:3px 6px;border-radius:4px}
+.hbar{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:12px}.hk{width:52px}.hv{height:12px;border:1px solid}.hn{color:#333}
 #lg i{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:middle;border:1px solid #888}
 </style>
 <div id="about"><div class="hd"><span>About this map</span><button class="btn" onclick="document.getElementById('about').style.display='none';document.getElementById('reopen').style.display='block'">Close</button></div><div class="bd"><h1>About this map</h1>
@@ -164,6 +181,17 @@
 <li><strong>Tap any tract</strong> to see its score, top drivers and rates with margins of error.</li>
 <li><strong>Switch the background map</strong> with the layer button in the top right (street map, gray map or topographic map).</li>
 </ul>
+<h2>Redlining then, vulnerability now</h2>
+<p>In the late 1930s the federal Home Owners' Loan Corporation (HOLC) graded neighborhoods for mortgage risk, from A (green, "best") to D (red, "hazardous"). D areas were "redlined": lenders treated them as too risky. The appraisers' own notes show that Black residents, immigrants and working-class jobs pushed a grade down. The map has HOLC maps for Atlanta (1938), Detroit (1939) and Pontiac (1937).</p>
+<p><b>How to look.</b> Open <b>Compare with 1930s redlining</b> (top right). <b>Swipe</b> puts today's map on the left and the 1930s map on the right; drag the bar across a neighborhood. <b>Side by side</b> shows two maps that move together; a ring marks your cursor's spot on the other map. <b>Overlay</b> lays the 1930s layer over today's map, with an opacity slider. Pick the 1930s layer: the <b>original maps</b> (scans), the <b>HOLC grades</b> (click an area to read its 1930s description), or the <b>tract score</b>.</p>
+<p><b>Tract score.</b> Each census tract gets a historic redlining score: the area-weighted average of the grades that covered it, from 1 (all A) to 4 (all D). Only tracts at least 20% graded count. Tract popups show it.</p>
+<p><b>What the numbers show.</b> Average SVI 2022 by the 1930s grade that covered most of each tract:</p>
+<div id="holc-chart"></div>
+<p>In both cities, tracts graded D in the 1930s are the most vulnerable today, on average. Atlanta's pattern is stronger. Its D tracts average 0.63, against 0.16 to 0.36 for B and C. Detroit's D tracts average 0.75, against 0.35 for A. Spearman correlation between the redlining score and each part of SVI (1 = same order, 0 = no relation):</p>
+<table id="holc-rho"></table>
+<p>In Atlanta the race theme tracks the old grades most closely (0.69): redlined areas are still mostly Black. In Detroit it hardly tracks them at all (0.03). Most of Detroit's graded tracts are now majority Black or Latino whatever their 1930s grade, after decades of white flight to the suburbs. There, income and housing track the old grades instead.</p>
+<p><b>Read with care.</b> A pattern is not proof that redlining caused it. Much of the gap between areas existed before the maps were drawn: the grades recorded it and lending rules then deepened it. Small groups, such as Atlanta's 7 A tracts, give unstable averages. Neighboring tracts are alike, so the real evidence is weaker than the tract count suggests. The 1930s maps covered only the city cores, not today's suburbs.</p>
+<p><small>HOLC maps, area descriptions and polygons: Robert K. Nelson, LaDale Winling et al., <a href="https://dsl.richmond.edu/panorama/redlining/" target="_blank" rel="noopener">Mapping Inequality: Redlining in New Deal America</a>, American Panorama, University of Richmond Digital Scholarship Lab. Georectified maps and spatial data: CC BY-NC.</small></p>
 <h2>Limits</h2>
 <ul>
 <li>The numbers come from a survey, so each tract has a margin of error. For poverty, the typical margin is about plus or minus 9 points.</li>
@@ -541,8 +569,15 @@ function list(a){if(a.length<2)return a.join('');if(a.length==2)return a[0]+' an
 // Chat apps that take a prefilled question in the URL, in link order.
 var AI={ChatGPT:'https://chatgpt.com/?q=',Claude:'https://claude.ai/new?q=',Grok:'https://grok.com/?q='};
 function aiUrl(id,app){var d=DATA[id];
- var q="I'm looking at CDC Social Vulnerability Index 2022 data for "+d.n+", "+cty(id)[0]+", "+cty(id)[1]+" (FIPS "+id+"). Overall score (national percentile) "+d.r.toFixed(3)+". Top 5 contributors to the score, as shares of the summed percentiles: "+d.t.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+". Top 3 structural drivers: "+d.s.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+" ("+f1(d.s3)+"% combined). Structural share of score: "+f1(d.ss)+"% (county average "+f1(cty(id)[2])+"%). Explain in plain language what this means for equity and which structural causes could be addressed.";
+ var q="I'm looking at CDC Social Vulnerability Index 2022 data for "+d.n+", "+cty(id)[0]+", "+cty(id)[1]+" (FIPS "+id+"). Overall score (national percentile) "+d.r.toFixed(3)+". Top 5 contributors to the score, as shares of the summed percentiles: "+d.t.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+". Top 3 structural drivers: "+d.s.map(function(x){return LAB[x[0]]+" "+f1(x[1])+"%";}).join(", ")+" ("+f1(d.s3)+"% combined). Structural share of score: "+f1(d.ss)+"% (county average "+f1(cty(id)[2])+"%). "+(HOLC_TRACT[id]&&HOLC_TRACT[id][0]>=HOLC_MIN?holcLine(id).replace(/<[^>]+>/g,"")+" (HOLC 1930s redlining map).":"")+" Explain in plain language what this means for equity and which structural causes could be addressed.";
  return AI[app]+encodeURIComponent(q.slice(0,1500));}
+// What the 1930s HOLC map said about this tract (HOLC_TRACT, holc.js):
+// [graded share, redlining score, A, B, C, D shares].
+var HOLC_MIN=0.2;
+function holcLine(id){var t=HOLC_TRACT[id];
+ if(!t||t[0]<HOLC_MIN){return '1930s HOLC map: not graded (or under 20% graded)';}
+ var parts=['A','B','C','D'].map(function(g,i){return t[2+i]>=0.005?g+' '+Math.round(t[2+i]*100)+'%':null;}).filter(Boolean);
+ return '1930s HOLC grades: '+parts.join(', ')+'; redlining score <b>'+t[1].toFixed(2)+'</b> (1 = A, 4 = D)';}
 function popupHtml(id){var d=DATA[id];if(!d)return '';var h='<b>'+d.n+', '+cty(id)[0]+', '+cty(id)[1]+'</b>';
  if(d.r===undefined){return h+'<br>No vulnerability score is available for this tract.<br>Minority status: '+rate(d.MINRTY);}
  h+='<br>Overall vulnerability score (0-1): <b>'+d.r.toFixed(3)+'</b> ('+grp(d.r)+')';
@@ -551,6 +586,7 @@ function popupHtml(id){var d=DATA[id];if(!d)return '';var h='<b>'+d.n+', '+cty(i
  h+='Structural share of the score: '+f1(d.ss)+'%';
  h+='<br>Measures that make up 25% of the score: '+d.q.map(function(v){return LAB[v];}).join('; ');
  h+='<br>Minority status: '+rate(d.MINRTY)+'<br>Below 150% poverty: '+rate(d.POV150)+'<br>Uninsured: '+rate(d.UNINSUR)+'<br>Housing cost burden: '+rate(d.HBURD)+'<br><small>&plusmn; = survey margin of error (90%)</small>';
+ h+='<br>'+holcLine(id);
  h+='<br><button class="btn exbtn" style="margin-top:6px" onclick="toggleExplain(this,\''+id+'\')">Explain this tract</button><div class="explain" style="display:none"></div><div style="margin-top:6px">Fix structural drivers with: '+Object.keys(AI).map(function(a){return '<a href="'+aiUrl(id,a)+'" target="_blank" rel="noopener">'+a+'</a>';}).join(', ')+'</div>';
  return h;}
 function explainText(id){var d=DATA[id];var tr=id.slice(5);var trn=String(parseInt(tr.slice(0,4),10))+(tr.slice(4)=='00'?'':'.'+tr.slice(4));
@@ -581,7 +617,7 @@ function bindAll(l){ if(l.eachLayer && !l.feature){ if(l.unbindPopup) l.unbindPo
     if(l.unbindTooltip) l.unbindTooltip(); if(l.unbindPopup) l.unbindPopup(); l.off('click');
     l.bindPopup(popupHtml(id),{maxWidth:300,maxHeight:Math.round(window.innerHeight*0.6),autoPanPadding:[10,10]}); l.options.interactive=true; } }
 for(var n in o) bindAll(o[n]);
-window.SVI={DATA:DATA,popupHtml:popupHtml,explainText:explainText,aiUrl:aiUrl};
+window.SVI={DATA:DATA,popupHtml:popupHtml,explainText:explainText,aiUrl:aiUrl,holcLine:holcLine};
 (function(){
 var HOVER=!window.matchMedia('(hover: none)').matches;
 window.SVI.HOVER=HOVER;
@@ -617,4 +653,5 @@ if(lg){ var t=document.createElement('button'); t.className='btn'; t.id='lgbtn';
 })();
 
 </script>
+<script src="redlining.js"></script>
 </html>
